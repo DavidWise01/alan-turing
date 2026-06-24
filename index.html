@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alan Turing — the machine &amp; the limits of computation</title>
+<meta name="description" content="LOGIKĒ XI — Alan Turing (1912–1954). In 1936 he defined the Turing machine: a head, an infinite tape, a tiny state table — the simplest thing that can compute anything computable. One such machine can simulate any other: the universal machine, the stored-program computer on paper, a decade before the hardware. He then proved the halting problem is undecidable — no program can decide, in general, whether an arbitrary program halts — recasting Gödel's diagonal as a fact about computation. Live: a running Turing machine (3-state busy beaver, binary increment) and the halting-problem diagonal. Honest: a precise impossibility result, often misread; and the man, prosecuted for being gay in 1952, dead at 41. David Lee Wise, two-layer honest.">
+<style>
+  :root{--bg:#0c0f17;--panel:#121622;--panel2:#19202f;--edge:#2a3346;--ink:#ede6d6;--dim:#b3ad9a;--faint:#7c7660;
+    --ochre:#d9b66a;--ochre2:#f0d79a;--proof:#5ad1ff;--proof2:#a7e6ff;--one:#7fe0a0;--zero:#fb7185;--amber:#fbbf24;--ember:#fb923c;
+    --mono:'SFMono-Regular',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;--serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.58;background-image:radial-gradient(1100px 560px at 75% -10%,#1c2436 0%,transparent 55%),radial-gradient(900px 500px at 0% 100%,#14110a 0%,transparent 55%);}
+  .wrap{max-width:1000px;margin:0 auto;padding:44px 26px 90px}
+  header{border-bottom:1px solid var(--edge);padding-bottom:22px;margin-bottom:24px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ochre);opacity:.95}
+  h1{font-family:Georgia,serif;font-size:38px;line-height:1.08;margin:.3em 0 .14em;font-weight:600}h1 em{color:var(--ochre2);font-style:italic}
+  .who{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.04em}
+  .sub{color:var(--dim);font-size:16px;max-width:74ch;margin-top:14px}.sub b{color:var(--ink)}
+  .verdicts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:22px 0}@media(max-width:720px){.verdicts{grid-template-columns:1fr}}
+  .vc{border:1px solid var(--edge);border-radius:11px;padding:13px 15px;border-top-width:3px;background:rgba(18,22,34,.6)}
+  .vc .badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em}
+  .vc.s{border-top-color:var(--one)}.vc.s .badge{color:var(--one)} .vc.m{border-top-color:var(--amber)}.vc.m .badge{color:var(--amber)} .vc.f{border-top-color:var(--ember)}.vc.f .badge{color:var(--ember)}
+  .vc p{font-size:12px;color:var(--dim);margin:6px 0 0;line-height:1.45}.vc p b{color:var(--ink)}
+  section{margin:36px 0}
+  h2{font-size:13px;font-family:var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ochre2);border-left:2px solid var(--ochre);padding-left:11px;margin:0 0 6px}
+  .lede{color:var(--dim);font-size:15px;margin:0 0 18px;max-width:80ch}
+  .panel{background:linear-gradient(180deg,var(--panel),#0a0d14);border:1px solid var(--edge);border-radius:14px;padding:20px;box-shadow:0 24px 60px -40px #000}
+  .controls{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:14px}
+  button{font-family:var(--mono);font-size:12px;color:var(--ink);background:#1a2030;border:1px solid var(--edge);border-radius:8px;padding:8px 13px;cursor:pointer}button:hover{background:#222b3e;border-color:var(--ochre)}
+  button.on{border-color:var(--ochre);background:#2a2414;color:var(--ochre2)}
+  button:disabled{opacity:.4;cursor:default}
+  .tape{display:flex;gap:4px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;padding:30px 6px 8px;margin-top:6px}
+  .cell{position:relative;flex:0 0 auto;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:18px;border:1px solid var(--edge);border-radius:7px;background:#0c1622;color:var(--dim)}
+  .cell.one{color:var(--one);border-color:#2f5b40;background:#0d1a12}
+  .cell.head{box-shadow:0 0 0 2px var(--ochre)}
+  .cell.head::before{content:'▼';position:absolute;top:-24px;left:50%;transform:translateX(-50%);color:var(--ochre);font-size:13px}
+  .stat{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--dim);justify-content:center;margin-top:6px}
+  .stat b{color:var(--ochre2)}.stat .hot{color:var(--proof2)}
+  .tbl{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:14px}
+  .tbl th,.tbl td{border:1px solid var(--edge);padding:5px 8px;text-align:center;color:var(--dim)}
+  .tbl th{color:var(--ochre);font-weight:700}.tbl td.act{background:#2a2414;color:var(--ochre2)}
+  .tbl .stcol{color:var(--proof2)}
+  .note{color:var(--dim);font-size:13.5px;border-left:2px solid var(--edge);padding-left:13px;margin:16px 0 0}.note b{color:var(--ink)}
+  .diag{text-align:center;padding:6px 0}
+  .rbtn{font-family:var(--mono);font-size:13px;padding:9px 16px;border-radius:9px;border:1px solid var(--edge);background:#1a2030;color:var(--ink);cursor:pointer;margin:0 5px}
+  .rout{font-family:Georgia,serif;font-size:15px;min-height:84px;margin-top:14px;color:var(--dim)}
+  .thm{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}@media(max-width:620px){.thm{grid-template-columns:1fr}}
+  .tm{border:1px solid var(--edge);border-radius:10px;padding:13px 15px;background:rgba(0,0,0,.14)}.tm b{color:var(--ochre2);font-family:var(--mono);font-size:11px}.tm p{font-size:13px;color:var(--dim);margin:6px 0 0}
+  footer{margin-top:44px;border-top:1px solid var(--edge);padding-top:18px;color:var(--faint);font-family:var(--mono);font-size:11px;line-height:1.7}
+  footer a,.bar2 a{color:var(--ochre)}.bar2{font-family:var(--mono);font-size:11.5px;margin-bottom:16px}.bar2 a{text-decoration:none;border-bottom:1px dotted #4a4126}
+  code{font-family:var(--mono);color:var(--ochre2);background:#15120a;padding:1px 5px;border-radius:5px}
+  blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--ochre);color:var(--ink);font-style:italic;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="bar2"><a href="https://davidwise01.github.io/ud0/">◄ UD0</a> &nbsp; <a href="https://davidwise01.github.io/kurt-godel/">← Gödel</a> &nbsp; LOGIKĒ · XI</div>
+<header>
+  <div class="kicker">LOGIKĒ · XI · the machine &amp; the limits of computation</div>
+  <h1>Alan <em>Turing</em></h1>
+  <div class="who">1912 – 1954 · London &amp; Cambridge &amp; Bletchley Park · "On Computable Numbers", 1936 · founder of computer science</div>
+  <div class="sub">Gödel proved the dream of a complete formal system impossible. Turing, a 23-year-old in Cambridge, asked the next question and answered it with a <em>machine</em>. To pin down what "mechanically computable" even means, he imagined the simplest possible computer: a <b>head reading a tape</b>, one square at a time, following a tiny table of rules. That stripped-down device — the <b>Turing machine</b> — can compute anything that can be computed at all. And one special machine can simulate every other: the <b>universal machine</b>, the stored-program computer on paper, a decade before the electronics existed. Then he proved its limit: no machine can decide, in general, whether an arbitrary program will ever <b>halt</b>.</div>
+</header>
+<div class="verdicts">
+  <div class="vc s"><span class="badge">✓ STRONG</span><p><b>Foundational and exact.</b> The Turing machine, universality, and the undecidability of the halting problem are rigorous results — the bedrock definition of computation and the literal blueprint of the stored-program computer.</p></div>
+  <div class="vc m"><span class="badge">◐ A MODEL, NOT THE BRAIN</span><p><b>It defines computability, not mind.</b> The Church–Turing thesis (this captures <em>all</em> mechanical computation) is a well-supported <em>thesis</em>, not a theorem; and "a machine can think" was Turing's <b>conjecture/test</b>, not something he proved.</p></div>
+  <div class="vc f"><span class="badge">◔ OFTEN MISREAD</span><p><b>Undecidable ≠ "computers can't".</b> The halting problem is a precise <em>general</em>-case impossibility; plenty of specific programs are easy to analyse. And the "Turing test" is a thought experiment, not a verdict on consciousness.</p></div>
+</div>
+
+<section>
+  <h2>I · A running machine — computation, stripped to the bone</h2>
+  <p class="lede">Here is the whole of a computer: an infinite <b>tape</b> of cells (each 0 or 1), a <b>head</b> on one cell, a <b>state</b>, and a <b>rule table</b> — "in this state reading this symbol: write a symbol, move left or right, go to that state." Nothing else. Pick a program and run it. The <b>busy beaver</b> is a tiny machine that writes as many 1s as it can before halting — its growth becomes literally uncomputable, the bridge to Module II. The <b>incrementer</b> adds 1 to a binary number. Watch the head crawl the tape; the active rule lights up.</p>
+  <div class="panel">
+    <div class="controls">
+      <button id="pBB" class="on">3-state busy beaver</button>
+      <button id="pINC">binary increment (7+1)</button>
+      <span style="flex:1"></span>
+      <button id="step">step ▸</button><button id="run">run ▶</button><button id="reset">reset ↺</button>
+    </div>
+    <div class="tape" id="tape"></div>
+    <div class="stat">
+      <span>state <b id="sState">A</b></span><span>step <b id="sStep">0</b></span>
+      <span>1s on tape <b id="sOnes">0</b></span><span class="hot" id="sHalt"></span>
+    </div>
+    <table class="tbl" id="rules"></table>
+    <div class="note" id="mnote">Six cells, three states, and it halts after writing six 1s — yet decide in advance how many 1s an <b>n</b>-state beaver writes, and you are computing the uncomputable. This little device is the exact thing John von Neumann turned into the stored-program architecture every computer still uses.</div>
+  </div>
+</section>
+
+<section>
+  <h2>II · The halting problem — a question no machine can answer</h2>
+  <p class="lede">Could one master program <b>H</b> take any program <b>P</b> and input <b>x</b> and always correctly answer "does P halt on x, or loop forever?" Turing proved: <em>no</em> — and he did it with Gödel's diagonal trick made mechanical. Suppose H exists. Build a contrary machine <b>D</b>: D runs H on the question "does <em>this very machine</em> halt?" and then does the <b>opposite</b> of H's answer. Now ask D to judge itself.</p>
+  <div class="panel">
+    <div class="diag">
+      <div style="font-family:Georgia;font-size:17px;margin-bottom:6px"><b>D</b> asks <b>H</b>: &ldquo;will D(D) halt?&rdquo; — then D does the <em>opposite</em>.</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--faint);margin-bottom:12px">if H says &ldquo;halts&rdquo; → D loops &nbsp;·&nbsp; if H says &ldquo;loops&rdquo; → D halts</div>
+      <button class="rbtn" id="dH">suppose H predicts &ldquo;halts&rdquo;</button><button class="rbtn" id="dL">suppose H predicts &ldquo;loops&rdquo;</button>
+      <div class="rout" id="dout">Pick H's prediction about D(D) — and watch it refute itself.</div>
+    </div>
+    <div class="note" id="dconcl" style="margin-top:14px">Whatever H predicts, D is built to do the opposite — so H is <b>wrong about D</b>. The only escapable assumption is that H existed at all. <b>No general halting-decider can exist.</b> This is the same diagonal that gave Gödel his unprovable sentence — now it says some questions are not just unprovable but <em>uncomputable</em>.</div>
+  </div>
+  <blockquote>"We can only see a short distance ahead, but we can see plenty there that needs to be done." <span style="color:var(--faint);font-style:normal;font-size:12px">— Alan Turing, 1950</span></blockquote>
+</section>
+
+<section>
+  <h2>III · The two gifts, the war, the man</h2>
+  <div class="thm">
+    <div class="tm"><b>THE UNIVERSAL MACHINE</b><p>One Turing machine can read the description of any other off its tape and simulate it. Hardware and program become <b>separable</b> — the idea of software, and of the general-purpose computer, born on paper in 1936.</p></div>
+    <div class="tm"><b>THE HALTING LIMIT</b><p>No program decides halting for all programs. Computation has a hard <b>horizon</b> — an exact echo of Gödel's incompleteness, recast as a fact about what machines can and cannot decide.</p></div>
+  </div>
+  <p class="lede" style="margin-top:16px">The lineage closes its loop here. Leibniz wanted reasoning reduced to calculation; Boole made logic an algebra of 0 and 1; Gödel showed the formal dream has a ceiling — and Turing gave that ceiling a <b>machine</b>, then showed the machine is <em>universal</em>. Everything in <a href="https://davidwise01.github.io/ud0/">PSĒPHOS</a> — every processor, every program — is a physical Turing machine. One sphere remains: <b>Shannon</b>, who in 1937 noticed Boole's algebra <em>is</em> the algebra of switches, soldering this whole lineage onto the gate.</p>
+  <p class="note" style="border-color:var(--amber)"><b style="color:var(--amber)">Gate kept on.</b> Two honesties. First, the <b>scope</b>: "undecidable" means <em>no single method works for every case</em> — it does not mean computers are weak or that your particular program can't be analysed; and the famous <b>Turing test</b> and "machines can think" were Turing's <em>provocations and predictions</em> (1950), not theorems — open questions to this day, not settled results. The <b>Church–Turing thesis</b> — that this captures <em>all</em> effective computation — is overwhelmingly supported but is a thesis about an informal notion, not something provable. Second, the <b>man</b>: at Bletchley Park, Turing's <em>Bombe</em> and methods broke the German naval Enigma, work credited with shortening WWII and saving very many lives — kept secret for decades, so he was never publicly honoured in his lifetime. In 1952, prosecuted under Britain's gross-indecency law simply for being gay, he was forced to choose prison or chemical castration; he chose the hormone treatment, lost his security clearance, and in 1954 died of cyanide poisoning at 41, ruled a suicide. A formal apology came in 2009 and a royal pardon in 2013 — the "Alan Turing law" later pardoned thousands more. The man who defined the machine, and helped win the war with one, was destroyed by the state he saved. The logic stands; the injustice is named.</p>
+</section>
+
+<footer>
+  ALAN TURING · LOGIKĒ XI · two-layer honest<br>
+  live Turing machine (3-state busy beaver → halts at 6 ones; binary incrementer) with stepping head, state &amp; lit rule-table · the halting-problem diagonal (both predictions refute H → no decider exists)<br>
+  "On Computable Numbers" (1936): the Turing machine, the universal machine, undecidability of halting · the definition of computation &amp; the blueprint of the stored-program computer<br>
+  ← <a href="https://davidwise01.github.io/kurt-godel/">Gödel</a> · next → <b>Shannon</b> (Boolean algebra = switching circuits, 1937 → the gate closes the loop into PSĒPHOS)<br>
+  LOGIKĒ · the lineage of logical mathematics · governor David Lee Wise · CC-BY-ND-4.0
+</footer>
+</div>
+<script>
+"use strict";
+// ---------- MODULE I : a running Turing machine ----------
+(function(){
+  // program format: states -> {symbol: {w, m:'L'|'R', n}}
+  const PROGS={
+    BB:{ name:'3-state busy beaver', start:'A', tape0:[], head:0, order:['A','B','C'],
+      table:{
+        A:{0:{w:1,m:'R',n:'B'},1:{w:1,m:'L',n:'C'}},
+        B:{0:{w:1,m:'L',n:'A'},1:{w:1,m:'R',n:'B'}},
+        C:{0:{w:1,m:'L',n:'B'},1:{w:1,m:'R',n:'H'}}
+      }},
+    INC:{ name:'binary increment (7 → 8)', start:'I', tape0:[0,1,2], head:0, order:['I'],
+      // LSB at left: walk right turning 1→0 until a 0(blank)→1, then halt
+      table:{ I:{0:{w:1,m:'R',n:'H'},1:{w:0,m:'R',n:'I'}} }}
+  };
+  let key='BB', M, tape, pos, state, steps, timer=null;
+  const $=id=>document.getElementById(id);
+  function load(k){
+    key=k; M=PROGS[k];
+    tape={}; (M.tape0||[]).forEach(i=>tape[i]=1);
+    pos=M.head; state=M.start; steps=0;
+    stop(); draw();
+  }
+  function ones(){let n=0;for(const k in tape)if(tape[k]===1)n++;return n;}
+  function draw(){
+    // window of cells around head
+    const keys=Object.keys(tape).map(Number);
+    let lo=Math.min(pos-3,keys.length?Math.min.apply(null,keys):0);
+    let hi=Math.max(pos+3,keys.length?Math.max.apply(null,keys):0);
+    lo=Math.min(lo,pos-3); hi=Math.max(hi,pos+3);
+    let html='';
+    for(let i=lo;i<=hi;i++){
+      const v=tape[i]||0;
+      html+='<div class="cell'+(v?' one':'')+(i===pos?' head':'')+'">'+v+'</div>';
+    }
+    $('tape').innerHTML=html;
+    $('sState').textContent=state; $('sStep').textContent=steps; $('sOnes').textContent=ones();
+    $('sHalt').textContent = state==='H' ? '● HALTED' : (state==='STUCK'?'● no rule':'');
+    drawRules();
+  }
+  function drawRules(){
+    let h='<tr><th>state</th><th>read 0</th><th>read 1</th></tr>';
+    M.order.forEach(st=>{
+      h+='<tr><td class="stcol">'+st+'</td>';
+      [0,1].forEach(sym=>{
+        const r=M.table[st]&&M.table[st][sym];
+        const active = st===state && (tape[pos]||0)===sym && state!=='H';
+        h+='<td class="'+(active?'act':'')+'">'+(r?('write '+r.w+', '+r.m+' → '+r.n):'—')+'</td>';
+      });
+      h+='</tr>';
+    });
+    $('rules').innerHTML=h;
+  }
+  function step(){
+    if(state==='H'||state==='STUCK')return false;
+    const sym=tape[pos]||0;
+    const r=M.table[state]&&M.table[state][sym];
+    if(!r){state='STUCK';draw();return false;}
+    tape[pos]=r.w; const np=pos+(r.m==='R'?1:-1); state=r.n; steps++; pos=np;
+    draw();
+    return state!=='H'&&state!=='STUCK';
+  }
+  function run(){ if(timer){stop();return;} $('run').classList.add('on'); $('run').textContent='pause ⏸';
+    timer=setInterval(()=>{ if(!step())stop(); }, 220); }
+  function stop(){ if(timer){clearInterval(timer);timer=null;} const b=$('run'); if(b){b.classList.remove('on');b.textContent='run ▶';} }
+  $('step').onclick=()=>{stop();step();};
+  $('run').onclick=run;
+  $('reset').onclick=()=>load(key);
+  $('pBB').onclick=()=>{ $('pBB').classList.add('on'); $('pINC').classList.remove('on'); load('BB'); };
+  $('pINC').onclick=()=>{ $('pINC').classList.add('on'); $('pBB').classList.remove('on'); load('INC'); };
+  load('BB');
+})();
+
+// ---------- MODULE II : the halting-problem diagonal ----------
+(function(){
+  const $=id=>document.getElementById(id);
+  function show(pred){
+    // D is built to do the OPPOSITE of H's prediction about D(D)
+    const dDoes = pred==='halts' ? 'loops forever' : 'halts';
+    const html =
+      '<div style="color:var(--proof2);font-family:var(--mono);font-size:13px;margin-bottom:8px">H predicts D(D) <b>'+pred+'</b>.</div>'+
+      'But D is defined to do the <b>opposite</b> of H&rsquo;s prediction — so D actually <b style="color:var(--ochre2)">'+dDoes+'</b>. '+
+      'H said &ldquo;'+pred+'&rdquo;; D did the reverse. <b style="color:var(--zero)">H was wrong.</b>';
+    $('dout').innerHTML=html;
+    // both buttons reachable; always a contradiction (verified: contradiction on both branches)
+  }
+  $('dH').onclick=()=>show('halts');
+  $('dL').onclick=()=>show('loops');
+})();
+</script>
+</body>
+</html>
